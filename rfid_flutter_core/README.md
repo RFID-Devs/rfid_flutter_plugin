@@ -26,7 +26,7 @@ Add the following to your `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  rfid_flutter_core: ^0.1.0
+  rfid_flutter_core: ^0.1.1
 ```
 
 Then run:

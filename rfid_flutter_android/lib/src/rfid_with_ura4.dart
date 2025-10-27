@@ -108,6 +108,15 @@ class RfidWithUra4 implements RfidInterface {
     return _methodChannelHelper.invokeBoolMethod('resetUhf');
   }
 
+  /// Trigger beep <br/>
+  /// 触发蜂鸣器 <br/>
+  ///
+  /// #### English
+  /// Returns a [RfidResult] where `data` is [bool], `true` if trigger successfully, `false` if trigger fails. <br/>
+  /// On failure, `error` contains the error description. <br/>
+  ///
+  /// #### 中文
+  /// 返回 [RfidResult]，成功时 `data` 为 [bool]，失败时 `error` 包含错误描述信息。
   Future<RfidResult<bool>> triggerBeep() async {
     try {
       await _channel.invokeMethod<bool>('triggerBeep');

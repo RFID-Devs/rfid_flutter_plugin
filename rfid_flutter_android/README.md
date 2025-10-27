@@ -48,6 +48,7 @@ For more detailed interface information, see [API reference](https://pub.dev/doc
 | setFastId <br/> getFastId               |   ✔️   |   ✔️   | FastID                     |
 | setTagFocus <br/> getTagFocus           |   ✔️   |   ✔️   | TagFocus                   |
 | resetUhf                                |   ✔️   |   ✔️   | Reset UHF module           |
+| triggerBeep                             |   ❌   |   ✔️   | Trigger beep               |
 
 #### Barcode
 

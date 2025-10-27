@@ -27,7 +27,7 @@
 
 ```yaml
 dependencies:
-  rfid_flutter_core: ^0.1.0
+  rfid_flutter_core: ^0.1.1
 ```
 
 然后运行：
