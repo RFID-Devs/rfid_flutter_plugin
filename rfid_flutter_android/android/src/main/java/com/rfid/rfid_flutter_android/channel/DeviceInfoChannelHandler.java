@@ -12,6 +12,8 @@ import androidx.core.content.ContextCompat;
 import com.rfid.rfid_flutter_android.utils.DeviceUtil;
 import com.rfid.rfid_flutter_android.utils.PlaySoundHelper;
 import com.rscja.CWDeviceInfo;
+import com.rscja.deviceapi.RFIDWithUHFA4;
+import com.rscja.deviceapi.RFIDWithUHFUART;
 import com.rscja.team.qcom.utility.LogUtility_qcom;
 
 import java.util.HashMap;
@@ -99,7 +101,16 @@ public class DeviceInfoChannelHandler implements MethodChannel.MethodCallHandler
 
     private void setDebug(MethodCall methodCall, MethodChannel.Result result) {
         boolean value = Boolean.TRUE.equals(methodCall.argument("value"));
-        LogUtility_qcom.setDebug(value);
+        try {
+            if (CWDeviceInfo.getDeviceInfo().getModelAndCpu().contains("A4") || CWDeviceInfo.getDeviceInfo().getModelAndCpu().contains("A8")) {
+                RFIDWithUHFA4.getInstance().setDebug(value);
+            } else {
+                RFIDWithUHFUART.getInstance().setDebug(value);
+            }
+        } catch (Exception e) {
+            result.error(TAG, "Error: " + e.getMessage(), null);
+            e.printStackTrace();
+        }
         result.success(true);
     }
 
