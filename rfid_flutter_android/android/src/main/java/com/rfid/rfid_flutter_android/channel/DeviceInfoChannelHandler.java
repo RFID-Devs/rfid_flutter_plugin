@@ -107,6 +107,7 @@ public class DeviceInfoChannelHandler implements MethodChannel.MethodCallHandler
             } else {
                 RFIDWithUHFUART.getInstance().setDebug(value);
             }
+            LogUtility_qcom.setDebug(value);
         } catch (Exception e) {
             result.error(TAG, "Error: " + e.getMessage(), null);
             e.printStackTrace();
