@@ -5,7 +5,6 @@ import 'package:signals/signals.dart';
 import 'package:bot_toast/bot_toast.dart';
 import 'package:rfid_flutter_android/rfid_flutter_android.dart';
 import 'package:rfid_flutter_android_example/entity/app_global_state.dart';
-import 'package:rfid_flutter_android_example/utils/audio_player_util.dart';
 import '../entity/rfid_manager.dart';
 
 class InventoryViewModel {

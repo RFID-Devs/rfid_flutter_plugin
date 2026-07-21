@@ -6,7 +6,7 @@ import '../entity/rfid_manager.dart';
 import '../entity/app_global_state.dart';
 
 class SettingsViewModel {
-  final selectedFrequency = signal(RfidFrequency.china1);
+  final selectedFrequency = signal(RfidFrequency.usa);
   final selectedPower = signal(1);
   final selectedRfLink = signal(RfidRfLink.prAskMiller8_160KHz);
 
@@ -92,7 +92,7 @@ class SettingsViewModel {
   Future<void> getFrequency({bool showToast = true}) async {
     final res = await RfidManager.instance.getFrequency();
     if (res.result) {
-      selectedFrequency.value = res.data ?? RfidFrequency.china1;
+      selectedFrequency.value = res.data ?? RfidFrequency.usa;
     }
     if (showToast) {
       showResult(res);
