@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.rfid.rfid_flutter_android.utils.DeviceUtil;
+import com.rfid.rfid_flutter_android.utils.PlaySoundHelper;
 import com.rscja.CWDeviceInfo;
 import com.rscja.team.qcom.utility.LogUtility_qcom;
 
@@ -25,10 +26,12 @@ public class DeviceInfoChannelHandler implements MethodChannel.MethodCallHandler
 
     private final Context context;
     private final ExecutorService executor;
+    private final PlaySoundHelper playSoundHelper;
 
     public DeviceInfoChannelHandler(Context context, ExecutorService executor) {
         this.context = context;
         this.executor = executor;
+        this.playSoundHelper = new PlaySoundHelper(context);
     }
 
     // 方法处理器映射表
@@ -37,6 +40,7 @@ public class DeviceInfoChannelHandler implements MethodChannel.MethodCallHandler
             put("getSerialNumber", DeviceInfoChannelHandler.this::getSerialNumber);
             put("getImei", DeviceInfoChannelHandler.this::getImei);
             put("isHandset", DeviceInfoChannelHandler.this::isHandset);
+            put("playSound", DeviceInfoChannelHandler.this::playSound);
             put("setDebug", DeviceInfoChannelHandler.this::setDebug);
             put("setWriteLog", DeviceInfoChannelHandler.this::setWriteLog);
 
@@ -80,6 +84,17 @@ public class DeviceInfoChannelHandler implements MethodChannel.MethodCallHandler
     // 不是A4就是手持机
     private void isHandset(MethodCall methodCall, MethodChannel.Result result) {
         result.success(!CWDeviceInfo.getDeviceInfo().getModelAndCpu().contains("A4") && !CWDeviceInfo.getDeviceInfo().getModelAndCpu().contains("A8"));
+    }
+
+    private void playSound(MethodCall methodCall, MethodChannel.Result result) {
+        Integer soundType = methodCall.argument("soundType");
+        if (soundType == null) {
+            result.error(TAG, "soundType is required", null);
+            return;
+        }
+        // 仅入队，立即返回，避免高频 MethodChannel 调用被播音阻塞
+        playSoundHelper.play(soundType);
+        result.success(true);
     }
 
     private void setDebug(MethodCall methodCall, MethodChannel.Result result) {

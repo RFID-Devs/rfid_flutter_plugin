@@ -32,17 +32,17 @@ class ReadWriteViewModel {
       final readData = res.data ?? '';
       data.value = readData;
       BotToast.showText(text: '${appState.localizations.readDataSuccess}:\n$readData');
-      AudioPlayerUtil.playSuccess();
+      DeviceManager.instance.playSound(1);
     } else {
       BotToast.showText(text: res.error == null ? appState.localizations.readDataFailed : '${res.error}');
-      AudioPlayerUtil.playFailure();
+      DeviceManager.instance.playSound(2);
     }
   }
 
   Future<void> writeData() async {
     if (data.value.isEmpty) {
       BotToast.showText(text: appState.localizations.pleaseEnterData);
-      AudioPlayerUtil.playFailure();
+      DeviceManager.instance.playSound(2);
       return;
     }
 
@@ -57,10 +57,10 @@ class ReadWriteViewModel {
 
     if (result.isEffective) {
       BotToast.showText(text: appState.localizations.writeDataSuccess);
-      AudioPlayerUtil.playSuccess();
+      DeviceManager.instance.playSound(1);
     } else {
       BotToast.showText(text: result.error == null ? appState.localizations.writeDataFailed : '${result.error}');
-      AudioPlayerUtil.playFailure();
+      DeviceManager.instance.playSound(2);
     }
   }
 

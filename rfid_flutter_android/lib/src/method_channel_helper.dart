@@ -112,4 +112,26 @@ class MethodChannelHelper {
       return RfidResult.failure(e.toString());
     }
   }
+
+  /// 通用方法：处理返回空的方法 <br>
+  /// [methodName] 方法名 <br>
+  /// [arguments] 参数 <br>
+  /// [validation] 参数校验方法 <br>
+  Future<RfidResult<void>> invokeVoidMethod(
+    String methodName, [
+    Map<String, dynamic>? arguments,
+    Future<void> Function()? validation,
+  ]) async {
+    try {
+      if (validation != null) {
+        await validation();
+      }
+      await _channel.invokeMethod<void>(methodName, arguments);
+      return const RfidResult.success(null);
+    } on PlatformException catch (e) {
+      return RfidResult.failure(e.message ?? 'Unknown error');
+    } catch (e) {
+      return RfidResult.failure(e.toString());
+    }
+  }
 }

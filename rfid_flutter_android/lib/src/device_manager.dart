@@ -118,6 +118,28 @@ class DeviceManager {
     return _methodChannelHelper.invokeBoolMethod('isHandset');
   }
 
+  /// Play a sound. <br/>
+  /// 播放声音。 <br/>
+  ///
+  /// #### English
+  /// [soundType] Sound type: `1` for success, any other value for failure (recommend `2`). <br/>
+  ///
+  /// #### 中文
+  /// [soundType] 声音类型，1: 成功，其它: 失败（推荐传 2）
+  Future<RfidResult<void>> playSound(int soundType) async {
+    return _methodChannelHelper.invokeVoidMethod(
+      'playSound',
+      {'soundType': soundType},
+      () async {
+        if (soundType < 1 || soundType > 2) {
+          // throw Exception('Invalid sound type: $soundType');
+          // ignore: avoid_print
+          print('Invalid sound type: $soundType');
+        }
+      },
+    );
+  }
+
   /// Get comprehensive device information including serial number, IMEI, and device type. <br/>
   /// 获取包括序列号、IMEI 和设备类型在内的综合设备信息。 <br/>
   ///

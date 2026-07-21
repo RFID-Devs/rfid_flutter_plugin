@@ -3,9 +3,6 @@ package com.rfid.rfid_flutter_android.utils;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -23,51 +20,50 @@ import java.util.List;
 public class DeviceUtil {
     private static final String TAG = "DeviceUtil";
 
+    @SuppressLint("HardwareIds")
     public static String getImei(Context context, String[] imei2) {
-        LogUtility_qcom.myLogV("DeviceUtil", "getImei " + CWDeviceInfo.getDeviceInfo().getModel() + " " + DeviceConfiguration_qcom.getModel());
+        LogUtility_qcom.myLogV(TAG, "getImei " + CWDeviceInfo.getDeviceInfo().getModel() + " " + DeviceConfiguration_qcom.getModel());
         if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_QCM2150_100)) {
             return getImeiC60(imei2);
-        } else if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_SMD450_100)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_MTK_6765_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C61P_SM6115_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C66P_SM6115_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C66_SMD450_90)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8786_130)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8786_130)
-                || CWDeviceInfo.getDeviceInfo().getModelAndCpu().equals(CWDeviceInfo.MC51_4350_140)
-        ) {
-            return getImeiC60_smd450(context, imei2);
-        } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
-            return getImei_mtk(context, imei2);
-        } else {
-            LogUtility_qcom.myLogV("DeviceUtil", "into else");
-            try {
-                TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                Class<?> clazz = manager.getClass();
-                Method getImei = clazz.getDeclaredMethod("getImei", int.class);//(int slotId)
-                //获得IMEI 1的信息：
-                Object imei_1 = getImei.invoke(manager, 0);
-                //获得IMEI 2的信息：
-                Object imei_2 = getImei.invoke(manager, 1);
-
-                if (imei_1 != null && imei_2 != null) {
-                    if (imei2 != null && imei2.length > 0) {
-                        imei2[0] = imei_2.toString();
-                    }
-                    return imei_1.toString();
-                } else if (imei_1 != null) {
-                    return imei_1.toString();
-                } else if (imei_2 != null) {
-                    return imei_2.toString();
-                } else {
-                    return null;
-                }
-            } catch (Exception ignored) {
+        } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_QCOM) {
+            String imei1 = getImeiC60_smd450(context, imei2);
+            if (!TextUtils.isEmpty(imei1) || !TextUtils.isEmpty(imei2[0])) {
+                return imei1;
             }
-            return null;
+        } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
+            String imei1 = getImei_mtk(context, imei2);
+            if (!TextUtils.isEmpty(imei1) || !TextUtils.isEmpty(imei2[0])) {
+                return imei1;
+            }
         }
-    }
 
+        LogUtility_qcom.myLogV(TAG, "getImei by other way");
+
+        try {
+            TelephonyManager manager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            Class<?> clazz = manager.getClass();
+            Method getImei = clazz.getDeclaredMethod("getImei", int.class);//(int slotId)
+            //获得IMEI 1的信息：
+            Object imei_1 = getImei.invoke(manager, 0);
+            //获得IMEI 2的信息：
+            Object imei_2 = getImei.invoke(manager, 1);
+
+            if (imei_1 != null && imei_2 != null) {
+                if (imei2 != null && imei2.length > 0) {
+                    imei2[0] = imei_2.toString();
+                }
+                return imei_1.toString();
+            } else if (imei_1 != null) {
+                return imei_1.toString();
+            } else if (imei_2 != null) {
+                return imei_2.toString();
+            } else {
+                return null;
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
 
     private static String getImei_mtk(Context context, String[] imei2) {
         String imei1 = Settings.Global.getString(context.getContentResolver(), "Imei1");
@@ -109,7 +105,7 @@ public class DeviceUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        LogUtility_qcom.myLogV("DeviceUtil", "getSystemProperties " + properties + " = " + strState);
+        LogUtility_qcom.myLogV(TAG, "getSystemProperties " + properties + " = " + strState);
         return strState;
     }
 
@@ -119,69 +115,46 @@ public class DeviceUtil {
      */
     @SuppressLint("HardwareIds")
     public static String getSerialNum(Context context) {
+        String sn = "";
         try {
-            if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8953_90)) {
-                return getAndroid90Sn();
-            } else if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_QCM2150_100)
-                    || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C61P_SM6115_110)
-                    || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C66P_SM6115_110)
+            if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8953_90)
+                    || CWDeviceInfo.getDeviceInfo().getModelAndCpu().equals(CWDeviceInfo.CW125_6225_160)
             ) {
-                return getSystemProperties("persist.quectel.sn");
-            } else if (CWDeviceInfo.getDeviceInfo().getModelAndCpu().equals(CWDeviceInfo.MC51_4350_140)) {
-                return getSystemProperties("persist.sys.quectel.sn");
+                sn = getSystemProperties("persist.radio.sn");
+            } else if (CWDeviceInfo.getDeviceInfo().getModelAndCpu().equals(CWDeviceInfo.MC51_4350_140)
+                    || CWDeviceInfo.getDeviceInfo().getModelAndCpu().equals(CWDeviceInfo.URA4_SM6115_130)
+            ) {
+                sn = getSystemProperties("persist.sys.quectel.sn");
             } else if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_SMD450_100)) {
-                return getSNC60_smd450(context);
+                sn = Settings.System.getString(context.getContentResolver(), "cw_sn_num");
             } else if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_MTK_6765_110)
                     || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8786_130)
             ) {
-                String sn = getSystemProperties("vendor.gsm.serial");
-                sn = sn.substring(0, sn.indexOf(" "));
-                LogUtility_qcom.myLogV("SN", "sn=" + sn + " sn.length=" + sn.length());
-                return sn;
-            } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
-                return Settings.Global.getString(context.getContentResolver(), "Serial");
-            } else {
-                if (Build.VERSION.SDK_INT >= 26) {
-                    try {
-                        return Build.getSerial();
-                    } catch (SecurityException e) {
-                        LogUtility_qcom.myLogErr("DeviceUtil", "No READ_PHONE_STATE permission to get serial number");
-                        return Build.UNKNOWN;
-                    }
+                sn = getSystemProperties("vendor.gsm.serial");
+                int spaceIndex = sn.indexOf(" ");
+                if (spaceIndex > 0) {
+                    sn = sn.substring(0, spaceIndex);
                 }
-                return "";
+            } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_QCOM) {
+                sn = getSystemProperties("persist.quectel.sn");
+            } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
+                sn = Settings.Global.getString(context.getContentResolver(), "Serial");
             }
-        } catch (Exception e) {
-            LogUtility_qcom.myLogV("DeviceUtil", "getSerialNum error:" + e);
-            return "";
-        }
-    }
 
-    @SuppressLint("PrivateApi")
-    public static String getAndroid90Sn() {
-        Class<?> systemProperties;
-        Method get;
-        String strState = "";
-        try {
-            systemProperties = Class.forName("android.os.SystemProperties");
-            get = systemProperties.getDeclaredMethod("get", String.class);
-            strState = (String) get.invoke(null, "persist.radio.sn");
+            if (!TextUtils.isEmpty(sn)) {
+                return sn;
+            }
+            return android.os.Build.SERIAL;
         } catch (Exception e) {
-            e.printStackTrace();
+            LogUtility_qcom.myLogV(TAG, "getSerialNum error:" + e);
         }
-        LogUtility_qcom.myLogV(TAG, "getAndroid90Sn sn=" + strState);
-        return strState;
-    }
-
-    private static String getSNC60_smd450(Context context) {
-        return Settings.System.getString(context.getContentResolver(), "cw_sn_num");
+        return "";
     }
 
 
     public static String getBluetoothAddress(Context context) {
-        String btMac = "";
         if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
-            btMac = Settings.Global.getString(context.getContentResolver(), "BtMac");
+            String btMac = Settings.Global.getString(context.getContentResolver(), "BtMac");
             if (!TextUtils.isEmpty(btMac)) {
                 LogUtility_qcom.myLogV(TAG, "MTK btMac=" + btMac);
                 return btMac;
@@ -197,41 +170,10 @@ public class DeviceUtil {
         return "";
     }
 
-    public static boolean isSystemSign(Context context, String packageName) {
-        PackageManager packageManager = context.getPackageManager();
-        int uid1 = getUid(context, packageName);
-        int systemUID = 1000;
-        if (packageManager.checkSignatures(uid1, systemUID) == PackageManager.SIGNATURE_MATCH) {
-            LogUtility_qcom.myLogV(TAG, "isSystemApplication: true");
-            return true;
-        }
-        LogUtility_qcom.myLogV(TAG, "isSystemApplication: false");
-        return false;
-    }
-
-    public static int getUid(Context context, String packageName) {
-        try {
-            PackageManager pm = context.getPackageManager();
-            ApplicationInfo ai = pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            //LogUtility_qcom.myLogV(TAG, "ai.uid: " + ai.uid);
-            return ai.uid;
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
 
     @SuppressLint("MissingPermission")
     public static String getWifiMac(Context context) {
-
-        if (DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C66P_SM6115_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C61P_SM6115_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.C60_MTK_6765_110)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8953_90)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.MC50_4350_120)
-                || DeviceConfiguration_qcom.getModel().equals(DeviceConfiguration_qcom.P80_8786_130)
-        ) {
+        if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_QCOM) {
             String mac = Settings.System.getString(context.getContentResolver(), "cw_wifi_mac");
             String mac2 = getSharedPreferences(context, "cw_wifi_mac");
             LogUtility_qcom.myLogV(TAG, "getWifiMac mac=" + mac + "  mac2=" + mac2);
@@ -254,40 +196,15 @@ public class DeviceUtil {
             if (!TextUtils.isEmpty(mac2)) {
                 return mac2;
             }
-            return "";
         } else if (CWDeviceInfo.getDeviceInfo().getTeam() == CWDeviceInfo.TEAM_MTK) {
-            try {
-                String wifiMac = Settings.Global.getString(context.getContentResolver(), "WiFiMac");
-                if (wifiMac != null && !wifiMac.isEmpty()) {
-                    return wifiMac;
-                }
-                List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-                for (NetworkInterface nif : all) {
-                    if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                    byte[] macBytes = nif.getHardwareAddress();
-                    if (macBytes == null) {
-                        return "";
-                    }
-
-                    StringBuilder res1 = new StringBuilder();
-                    for (byte b : macBytes) {
-                        res1.append(String.format("%02X:", b));
-                    }
-
-                    if (res1.length() > 0) {
-                        res1.deleteCharAt(res1.length() - 1);
-                    }
-                    return res1.toString();
-                }
-            } catch (Exception ignored) {
+            String wifiMac = Settings.Global.getString(context.getContentResolver(), "WiFiMac");
+            if (!TextUtils.isEmpty(wifiMac)) {
+                return wifiMac;
             }
-            return "02:00:00:00:00:00";
-        } else {
-            return getLocalMacAddress6Above();
         }
-    }
 
+        return getLocalMacAddress6Above();
+    }
 
     private static String getLocalMacAddress6Above() {
         try {
@@ -311,8 +228,9 @@ public class DeviceUtil {
             }
         } catch (Exception ignored) {
         }
-        return "02:00:00:00:00:00";
+        return "";
     }
+
 
     private static String getSharedPreferences(Context context, String key) {
         return getSP(context).getString(key, "");

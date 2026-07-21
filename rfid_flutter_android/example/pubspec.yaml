@@ -21,6 +21,7 @@ dependencies:
   audioplayers: ^6.5.1 
   package_info_plus: ^8.0.0
   charset_converter: ^2.3.0
+  # rfid_flutter_android: ^0.1.1
   rfid_flutter_android:
     path: ../
 

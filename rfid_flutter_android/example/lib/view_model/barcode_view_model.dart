@@ -36,7 +36,7 @@ class BarcodeViewModel {
         barcodeInfo.extensions['decodingFormatData'] = decodingFormatData;
         // Add barcode info to list
         barcodeList.value = [...barcodeList.value, barcodeInfo];
-        AudioPlayerUtil.playSuccess();
+        DeviceManager.instance.playSound(1);
         // Trigger scroll to bottom
         _scrollToBottomCallback?.call();
         return;
@@ -52,7 +52,7 @@ class BarcodeViewModel {
       } else if (barcodeInfo.resultCode == RfidBarcodeInfo.DECODE_ENGINE_ERROR) {
         BotToast.showText(text: appState.localizations.decodeEngineError);
       }
-      AudioPlayerUtil.playFailure();
+      DeviceManager.instance.playSound(2);
     });
   }
 

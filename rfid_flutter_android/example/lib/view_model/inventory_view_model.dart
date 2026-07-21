@@ -89,7 +89,7 @@ class InventoryViewModel {
     }
     allCount.value += tagInfo.count;
 
-    AudioPlayerUtil.playSuccess();
+    DeviceManager.instance.playSound(1);
 
     updateTagListUI();
   }
