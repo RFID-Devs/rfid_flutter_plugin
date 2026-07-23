@@ -386,6 +386,15 @@ class RfidWithUra4 implements RfidInterface {
     );
   }
 
+  @override
+  Future<RfidResult<bool>> setFilters(List<RfidFilter> filters) async {
+    return _methodChannelHelper.invokeBoolMethod(
+      'setFilters',
+      {'filters': filters.map((filter) => filter.toMap()).toList()},
+      () => RfidInterfaceParamCheck.checkFilters(filters),
+    );
+  }
+
   Future<RfidResult<bool>> _setupFilter(RfidFilter? filter) async {
     if (filter == null) {
       return const RfidResult.success(true); // 无过滤器

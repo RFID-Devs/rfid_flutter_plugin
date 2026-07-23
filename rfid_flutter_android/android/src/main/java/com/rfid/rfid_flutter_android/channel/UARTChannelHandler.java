@@ -7,13 +7,16 @@ import androidx.annotation.NonNull;
 import com.rfid.rfid_flutter_android.utils.TagUtil;
 import com.rscja.deviceapi.RFIDWithUHFUART;
 import com.rscja.deviceapi.entity.FastInventoryEntity;
+import com.rscja.deviceapi.entity.FilterEntity;
 import com.rscja.deviceapi.entity.Gen2Entity;
 import com.rscja.deviceapi.entity.InventoryModeEntity;
 import com.rscja.deviceapi.entity.UHFTAGInfo;
 import com.rscja.deviceapi.interfaces.IUHF;
 import com.rscja.team.qcom.utility.LogUtility_qcom;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -41,6 +44,7 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
 
         // 盘点相关
         put("setFilter", UARTChannelHandler.this::setFilter);
+        put("setFilters", UARTChannelHandler.this::setFilters);
         put("singleInventory", UARTChannelHandler.this::singleInventory);
         put("startInventory", UARTChannelHandler.this::startInventory);
         put("stopInventory", UARTChannelHandler.this::stopInventory);
@@ -119,7 +123,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
     }
 
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void setFilter(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
@@ -138,6 +144,36 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         result.success(success);
 
         LogUtility_qcom.myLogV(TAG, "setFilter: " + bank + " " + offset + " " + length + " " + data + " success=" + success);
+    }
+
+    private void setFilters(MethodCall methodCall, MethodChannel.Result result) {
+        Map<String, Object> map = methodCall.arguments();
+        if (map == null) {
+            result.error(TAG, "Invalid arguments", null);
+            return;
+        }
+
+        Object filtersObj = map.get("filters");
+        if (!(filtersObj instanceof List)) {
+            result.error(TAG, "Invalid filters", null);
+            return;
+        }
+        try {
+            List<Map<String, Object>> filters = (List<Map<String, Object>>) filtersObj;
+            List<FilterEntity> list = new ArrayList<>();
+            for (Map<String, Object> filter : filters) {
+                int bank = (int) filter.get("bank");
+                int offset = (int) filter.get("offset");
+                int length = (int) filter.get("length");
+                String data = (String) filter.get("data");
+                list.add(new FilterEntity(bank, offset, length, data));
+            }
+            boolean res = mReader.setFilter(list);
+            result.success(res);
+            LogUtility_qcom.myLogV(TAG, "setFilters: " + list + " res=" + res);
+        } catch (Exception e) {
+            result.error(TAG, "setFilters error: " + e.getMessage(), null);
+        }
     }
 
     private void singleInventory(MethodCall methodCall, MethodChannel.Result result) {
@@ -161,7 +197,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         result.success(mReader.isInventorying());
     }
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void readData(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
@@ -216,7 +254,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         }
     }
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void writeData(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
@@ -263,7 +303,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         }
     }
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void lockTag(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
@@ -304,7 +346,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         }
     }
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void killTag(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
@@ -427,7 +471,9 @@ public class UARTChannelHandler implements MethodChannel.MethodCallHandler {
         result.success(map);
     }
 
-    /** @noinspection DataFlowIssue */
+    /**
+     * @noinspection DataFlowIssue
+     */
     private void setGen2(MethodCall methodCall, MethodChannel.Result result) {
         Map<String, Object> map = methodCall.arguments();
         if (map == null) {
