@@ -399,45 +399,116 @@ abstract class RfidInterface {
   /// ```
   Future<RfidResult<bool>> setFilter(RfidFilter filter);
 
+  /// Set multiple Filter parameters <br/>
+  /// 设置多个盘点过滤参数 <br/>
+  ///
+  /// #### English
+  /// [filters] List of filter parameters. <br/>
+  /// Returns a [RfidResult] where `data` is [bool], `true` if set successfully, `false` if set fails. <br/>
+  /// On failure, `error` contains the error description. <br/>
+  ///
+  /// #### 中文
+  /// [filters] 过滤参数列表。 <br/>
+  /// 返回 [RfidResult]，成功时 `data` 为 [bool]，true 表示设置成功，false 表示设置失败。 <br/>
+  ///
+  /// #### Example
+  ///
+  /// 取消过滤
+  ///
+  /// ```dart
+  /// final filters = [
+  ///   RfidFilter(
+  ///     enabled: false,
+  ///   ),
+  /// ];
+  /// final result = await RfidWithUart.instance.setFilters(filters);
+  /// ```
+  ///
+  /// ----
+  ///
+  /// Filter tags whose EPC data starts with 1111, and TID data 16\~48 bit is 22223333 <br/>
+  /// 过滤EPC数据以 1111开头，且TID数据 第16\~48 bit 为 22223333的标签
+  ///
+  /// ```dart
+  /// final filters = [
+  ///   RfidFilter(
+  ///     enabled: true,
+  ///     bank: RfidBank.epc,
+  ///     offset: 32,
+  ///     length: 16,
+  ///     data: '1111',
+  ///   ),
+  ///   RfidFilter(
+  ///     enabled: true,
+  ///     bank: RfidBank.tid,
+  ///     offset: 16,
+  ///     length: 32,
+  ///     data: '22223333',
+  ///   ),
+  /// ];
+  /// final result = await RfidWithUart.instance.setFilters(filters);
+  /// ```
+  Future<RfidResult<bool>> setFilters(List<RfidFilter> filters);
+
   /// Single Inventory <br/>
   /// 单步盘点 <br/>
   ///
   /// #### English
-  /// Single step inventory, only inventory one tag <br/>
+  /// Single step inventory, only inventory one tag. <br/>
+  /// [filters] Optional filter list. See [startInventory] for filter semantics. <br/>
   /// Returns a [RfidResult] where `data` is [RfidTagInfo], the tag information. <br/>
   /// On failure, `error` contains the error description. <br/>
   ///
   /// #### 中文
-  /// 单步盘点，只盘点一张标签 <br/>
+  /// 单步盘点，只盘点一张标签。 <br/>
+  /// [filters] 可选过滤参数列表，语义同 [startInventory]。 <br/>
   /// 返回 [RfidResult]，成功时 `data` 为 [RfidTagInfo] 标签信息，失败时 `error` 包含错误描述信息。 <br/>
-  Future<RfidResult<RfidTagInfo>> singleInventory({RfidFilter? filter});
+  Future<RfidResult<RfidTagInfo>> singleInventory({List<RfidFilter>? filters});
 
   /// Start Inventory <br/>
   /// 开始盘点 <br/>
   ///
   /// #### English
-  /// [filter] Optional filter parameters, if empty, it means not to set the filter (note that it is not to cancel the filter) <br/>
+  /// [filters] Optional filter list: <br/>
+  /// - `null` (or omitted): do not set filter (note: this does **not** cancel existing filters) <br/>
+  /// - empty list, or all items with `enabled == false`: cancel/disable filters <br/>
+  /// - one enabled filter: equivalent to [setFilter] <br/>
+  /// - multiple enabled filters: equivalent to [setFilters] <br/>
   /// [inventoryParam] Optional inventory parameters, if empty, it means not to set the inventory parameters, using the default parameters. <br/>
   /// Returns a [RfidResult] where `data` is [bool], `true` if the inventory starts successfully, `false` if the inventory fails. <br/>
   /// On failure, `error` contains the error description. <br/>
   ///
   /// #### 中文
-  /// [filter] 可选过滤参数，为空时表示不设置过滤（注意不是取消过滤） <br/>
+  /// [filters] 可选过滤参数列表： <br/>
+  /// - `null`（或不传）：不设置过滤（注意：**不是**取消过滤） <br/>
+  /// - 空列表，或全部 `enabled == false`：取消/禁用过滤 <br/>
+  /// - 有效过滤（`enabled == true`）数量为 1：等价于 [setFilter] <br/>
+  /// - 有效过滤数量大于 1：等价于 [setFilters] <br/>
   /// [inventoryParam] 可选盘点参数，为空时表示不设置盘点参数，采用默认参数。 <br/>
   /// 返回 [RfidResult]，成功时 `data` 为 [bool]，true 表示开始盘点成功，false 表示开始盘点失败。 <br/>
   /// 失败时 `error` 包含错误描述信息。 <br/>
   ///
   /// #### Example
   ///
-  /// No filter, no inventoryParam, use default parameters. <br/>
-  /// 不设置过滤，不设置盘点参数，采用默认参数。
+  /// Pass `null` / omit filters: do not set filter. <br/>
+  /// 传入 `null` / 不传 filters：不设置过滤。
   /// ```dart
   /// final result = await RfidWithUart.instance.startInventory();
+  /// // 或
+  /// final result = await RfidWithUart.instance.startInventory(filters: null);
   /// ```
   ///
   /// ----
   ///
-  /// Set filter, no inventoryParam, use default parameters. <br/>
+  /// Pass empty list: cancel filters. <br/>
+  /// 传入空列表：取消过滤。
+  /// ```dart
+  /// final result = await RfidWithUart.instance.startInventory(filters: []);
+  /// ```
+  ///
+  /// ----
+  ///
+  /// Set one filter, no inventoryParam, use default parameters. <br/>
   /// 过滤EPC数据以 1111开头的标签（EPC: **1111**22223333）
   /// ```dart
   /// final filter = RfidFilter(
@@ -447,7 +518,7 @@ abstract class RfidInterface {
   ///   length: 16,
   ///   data: '1111',
   /// );
-  /// final result = await RfidWithUart.instance.startInventory(filter: filter);
+  /// final result = await RfidWithUart.instance.startInventory(filters: [filter]);
   /// ```
   ///
   /// It's equivalent to: <br/>
@@ -460,19 +531,39 @@ abstract class RfidInterface {
   ///   length: 16,
   ///   data: '1111',
   /// );
-  /// final result = await RfidWithUart.instance.setFilter(filter);
+  /// await RfidWithUart.instance.setFilter(filter);
   /// final result = await RfidWithUart.instance.startInventory();
   /// ```
   ///
   /// ----
   ///
-  /// Ensure cancel all filters, then start inventory. <br/>
-  /// 确保取消所有过滤，然后开启盘点。
+  /// Set multiple filters (three filters). <br/>
+  /// 多条件过滤
   /// ```dart
-  /// final filter = RfidFilter(
-  ///   enabled: false,
-  /// );
-  /// final result = await RfidWithUart.instance.startInventory(filter: filter);
+  /// final filters = [
+  ///   RfidFilter(
+  ///     enabled: true,
+  ///     bank: RfidBank.epc,
+  ///     offset: 32,
+  ///     length: 16,
+  ///     data: '1111',
+  ///   ),
+  ///   RfidFilter(
+  ///     enabled: true,
+  ///     bank: RfidBank.tid,
+  ///     offset: 16,
+  ///     length: 32,
+  ///     data: '22223333',
+  ///   ),
+  ///   RfidFilter(
+  ///     enabled: true,
+  ///     bank: RfidBank.user,
+  ///     offset: 0,
+  ///     length: 16,
+  ///     data: 'ABCD',
+  ///   ),
+  /// ];
+  /// final result = await RfidWithUart.instance.startInventory(filters: filters);
   /// ```
   ///
   /// ----
@@ -484,11 +575,10 @@ abstract class RfidInterface {
   /// final result = await RfidWithUart.instance.startInventory(
   ///     inventoryParam: RfidInventoryParam(unique: true)
   /// );
-  ///
   /// ```
   ///
   Future<RfidResult<bool>> startInventory({
-    RfidFilter? filter,
+    List<RfidFilter>? filters,
     RfidInventoryParam? inventoryParam,
   });
 

@@ -31,6 +31,16 @@ class RfidInterfaceParamCheck {
     }
   }
 
+  static Future<void> checkFilters(List<RfidFilter> filters) async {
+    for (var i = 0; i < filters.length; i++) {
+      try {
+        await checkFilter(filters[i]);
+      } on ArgumentError catch (e) {
+        throw ArgumentError('filters[$i]: ${e.message}');
+      }
+    }
+  }
+
   static Future<void> checkPassword(String password) async {
     if (password.length != 8) {
       throw ArgumentError('Password must be 8 characters long, got: $password');
