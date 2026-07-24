@@ -350,6 +350,24 @@ abstract class AppLocalizations {
   /// **'Duration'**
   String get duration;
 
+  /// No description provided for @inventoryDurationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get inventoryDurationLabel;
+
+  /// No description provided for @inventoryConfigDurationFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration {duration}s'**
+  String inventoryConfigDurationFormat(String duration);
+
+  /// No description provided for @inventoryConfigSeparator.
+  ///
+  /// In en, this message translates to:
+  /// **' | '**
+  String get inventoryConfigSeparator;
+
   /// No description provided for @seconds.
   ///
   /// In en, this message translates to:

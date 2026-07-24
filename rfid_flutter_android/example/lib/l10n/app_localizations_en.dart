@@ -139,6 +139,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duration => 'Duration';
 
   @override
+  String get inventoryDurationLabel => 'Duration';
+
+  @override
+  String inventoryConfigDurationFormat(String duration) {
+    return 'Duration ${duration}s';
+  }
+
+  @override
+  String get inventoryConfigSeparator => ' | ';
+
+  @override
   String get seconds => '(s)';
 
   @override

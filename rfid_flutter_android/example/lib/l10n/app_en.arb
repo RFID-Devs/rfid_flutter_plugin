@@ -63,6 +63,16 @@
   "inventory": "Inventory",
   "tagUnique": "Unique",
   "duration": "Duration",
+  "inventoryDurationLabel": "Duration",
+  "inventoryConfigDurationFormat": "Duration {duration}s",
+  "@inventoryConfigDurationFormat": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryConfigSeparator": " | ",
   "seconds": "(s)",
   "time": "Time",
   "tag": "Tag",

@@ -139,6 +139,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get duration => '时长';
 
   @override
+  String get inventoryDurationLabel => '盘点时长';
+
+  @override
+  String inventoryConfigDurationFormat(String duration) {
+    return '时长 ${duration}s';
+  }
+
+  @override
+  String get inventoryConfigSeparator => ' | ';
+
+  @override
   String get seconds => '(秒)';
 
   @override

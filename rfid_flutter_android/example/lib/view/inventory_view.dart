@@ -31,6 +31,7 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
 
   @override
   void dispose() {
+    _durationController.dispose();
     _viewModel.dispose();
     super.dispose();
   }
@@ -48,13 +49,7 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
               child: MultiFilterPanel(controller: _viewModel.filtersController),
             ),
             Expanded(
-              child: ExpandablePanel(
-                title: AppLocalizations.of(context)!.settings,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Text('Settings panel placeholder'),
-                ),
-              ),
+              child: _buildSettingsPanel(),
             ),
           ],
         ),
@@ -64,7 +59,6 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
             child: Column(
               children: [
                 _buildButtons(),
-                _buildTimeSection(),
                 _buildTagList(),
               ],
             ),
@@ -122,62 +116,85 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
     );
   }
 
-  /// 构建时间设置区域
-  Widget _buildTimeSection() {
-    return Row(
-      children: [
-        Watch.builder(builder: (context) {
-          final unique = _viewModel.unique.watch(context);
-          return GestureDetector(
-            onTap: () => _viewModel.unique.value = !_viewModel.unique.value,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 8, 0),
-              child: Row(
-                children: [
-                  Checkbox(
-                    value: unique,
-                    onChanged: (value) => _viewModel.unique.value = value ?? false,
-                    // activeColor: Colors.blue,
-                    visualDensity: VisualDensity.standard,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  Text(AppLocalizations.of(context)!.tagUnique),
-                ],
+  /// 构建设置面板（时长、标签去重）
+  Widget _buildSettingsPanel() {
+    final l10n = AppLocalizations.of(context)!;
+    return Watch.builder(builder: (context) {
+      final unique = _viewModel.unique.watch(context);
+      final duration = _viewModel.duration.watch(context);
+      return ExpandablePanel(
+        title: l10n.settings,
+        subtitle: _settingsSubtitle(l10n, unique: unique, duration: duration),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 12),
+                child: Row(
+                  children: [
+                    Text('${l10n.inventoryDurationLabel}: '),
+                    SizedBox(
+                      width: 100,
+                      height: 40,
+                      child: TextFormField(
+                        controller: _durationController,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(top: 8, left: 4),
+                          hintText: '999999',
+                          isDense: true,
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          _viewModel.duration.value = value;
+                        },
+                      ),
+                    ),
+                    const Text('s'),
+                  ],
+                ),
               ),
-            ),
-          );
-        }),
-        const SizedBox(width: 10),
-        Text("${AppLocalizations.of(context)!.duration}: "),
-        SizedBox(
-          width: 80,
-          height: 40,
-          child: TextFormField(
-            controller: _durationController,
-            decoration: const InputDecoration(
-              // border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.only(top: 8, left: 4),
-              hintText: "999999",
-              isDense: true,
-            ),
-            keyboardType: TextInputType.number,
-            onChanged: (value) {
-              _viewModel.duration.value = value;
-            },
+              GestureDetector(
+                onTap: () => _viewModel.unique.value = !_viewModel.unique.value,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: unique,
+                      onChanged: (value) => _viewModel.unique.value = value ?? false,
+                      visualDensity: VisualDensity.standard,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    Text(l10n.tagUnique),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        Text(AppLocalizations.of(context)!.seconds),
-        const SizedBox(width: 20),
-        // const Text("Time: "),
-        Watch.builder(builder: (context) {
-          return Text(
-            _viewModel.inventoryTime.watch(context).toStringAsFixed(1),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          );
-        }),
-        Text(" ${AppLocalizations.of(context)!.seconds}"),
-      ],
-    );
+      );
+    });
+  }
+
+  String? _settingsSubtitle(
+    AppLocalizations l10n, {
+    required bool unique,
+    required String duration,
+  }) {
+    final parts = <String>[];
+    final trimmed = duration.trim();
+    if (trimmed.isNotEmpty) {
+      parts.add(l10n.inventoryConfigDurationFormat(trimmed));
+    }
+    if (unique) {
+      parts.add(l10n.tagUnique);
+    }
+    if (parts.isEmpty) {
+      return null;
+    }
+    return parts.join(l10n.inventoryConfigSeparator);
   }
 
   /// 构建标签列表区域
@@ -213,15 +230,27 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
                         );
                       },
                     ),
-                    Text('${AppLocalizations.of(context)!.all}: '),
+                    // Text('${AppLocalizations.of(context)!.all}: '),
                     Watch.builder(
                       builder: (context) {
-                        return Text(
-                          _viewModel.allCount.watch(context).toString(),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        return SizedBox(
+                          width: 70,
+                          child: Text(
+                            _viewModel.allCount.watch(context).toString(),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
                         );
                       },
                     ),
+                    Watch.builder(builder: (context) {
+                      return SizedBox(
+                        width: 70,
+                        child: Text(
+                          '${_viewModel.inventoryTime.watch(context).toStringAsFixed(1)} s',
+                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }),
                   ],
                 ),
                 Row(

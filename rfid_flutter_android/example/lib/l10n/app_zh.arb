@@ -60,6 +60,16 @@
   "inventory": "盘点",
   "tagUnique": "标签去重",
   "duration": "时长",
+  "inventoryDurationLabel": "盘点时长",
+  "inventoryConfigDurationFormat": "时长 {duration}s",
+  "@inventoryConfigDurationFormat": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "inventoryConfigSeparator": " | ",
   "seconds": "(秒)",
   "time": "时间",
   "tag": "标签",
