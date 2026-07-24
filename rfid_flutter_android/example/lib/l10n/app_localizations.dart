@@ -194,6 +194,78 @@ abstract class AppLocalizations {
   /// **'Filter'**
   String get filter;
 
+  /// No description provided for @filterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Filter'**
+  String get filterTitle;
+
+  /// No description provided for @filterNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No filter'**
+  String get filterNone;
+
+  /// No description provided for @filterEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No filter conditions'**
+  String get filterEmpty;
+
+  /// No description provided for @filterAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Filter'**
+  String get filterAdd;
+
+  /// No description provided for @filterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get filterClear;
+
+  /// No description provided for @filterCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tag filter(s)'**
+  String filterCountFormat(int count);
+
+  /// No description provided for @filterDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Condition'**
+  String get filterDialogTitle;
+
+  /// No description provided for @filterItemFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{bank} · Offset {offset} · Length {length} · {data}'**
+  String filterItemFormat(String bank, int offset, int length, String data);
+
+  /// No description provided for @filterMaxCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 8 filter conditions'**
+  String get filterMaxCount;
+
+  /// No description provided for @filterOffsetInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid offset'**
+  String get filterOffsetInvalid;
+
+  /// No description provided for @filterLengthInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid length'**
+  String get filterLengthInvalid;
+
+  /// No description provided for @filterDataEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter data cannot be empty'**
+  String get filterDataEmpty;
+
   /// No description provided for @offset.
   ///
   /// In en, this message translates to:
@@ -235,6 +307,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter password'**
   String get enterPassword;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 
   /// No description provided for @clear.
   ///

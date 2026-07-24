@@ -57,6 +57,46 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filter => '过滤';
 
   @override
+  String get filterTitle => '标签过滤';
+
+  @override
+  String get filterNone => '无过滤';
+
+  @override
+  String get filterEmpty => '无过滤条件';
+
+  @override
+  String get filterAdd => '添加过滤';
+
+  @override
+  String get filterClear => '清空过滤';
+
+  @override
+  String filterCountFormat(int count) {
+    return '$count 个过滤条件';
+  }
+
+  @override
+  String get filterDialogTitle => '过滤条件';
+
+  @override
+  String filterItemFormat(String bank, int offset, int length, String data) {
+    return '$bank · 地址 $offset · 长度 $length · $data';
+  }
+
+  @override
+  String get filterMaxCount => '最多支持添加8个过滤条件';
+
+  @override
+  String get filterOffsetInvalid => '地址参数无效';
+
+  @override
+  String get filterLengthInvalid => '长度参数无效';
+
+  @override
+  String get filterDataEmpty => '过滤数据不能为空';
+
+  @override
   String get offset => '地址';
 
   @override
@@ -76,6 +116,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enterPassword => '输入密码';
+
+  @override
+  String get ok => '确定';
 
   @override
   String get clear => '清空';

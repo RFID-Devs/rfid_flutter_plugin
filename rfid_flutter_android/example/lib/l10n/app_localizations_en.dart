@@ -57,6 +57,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filter => 'Filter';
 
   @override
+  String get filterTitle => 'Tag Filter';
+
+  @override
+  String get filterNone => 'No filter';
+
+  @override
+  String get filterEmpty => 'No filter conditions';
+
+  @override
+  String get filterAdd => 'Add Filter';
+
+  @override
+  String get filterClear => 'Clear Filters';
+
+  @override
+  String filterCountFormat(int count) {
+    return '$count tag filter(s)';
+  }
+
+  @override
+  String get filterDialogTitle => 'Filter Condition';
+
+  @override
+  String filterItemFormat(String bank, int offset, int length, String data) {
+    return '$bank · Offset $offset · Length $length · $data';
+  }
+
+  @override
+  String get filterMaxCount => 'Maximum 8 filter conditions';
+
+  @override
+  String get filterOffsetInvalid => 'Invalid offset';
+
+  @override
+  String get filterLengthInvalid => 'Invalid length';
+
+  @override
+  String get filterDataEmpty => 'Filter data cannot be empty';
+
+  @override
   String get offset => 'Offset';
 
   @override
@@ -76,6 +116,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterPassword => 'Enter password';
+
+  @override
+  String get ok => 'OK';
 
   @override
   String get clear => 'Clear';

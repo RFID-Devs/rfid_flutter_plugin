@@ -6,15 +6,10 @@ import 'package:bot_toast/bot_toast.dart';
 import 'package:rfid_flutter_android/rfid_flutter_android.dart';
 import 'package:rfid_flutter_android_example/entity/app_global_state.dart';
 import '../entity/rfid_manager.dart';
+import '../widget/multi_filter_panel.dart';
 
 class InventoryViewModel {
-  final filter = signal(RfidFilter(
-    enabled: false,
-    offset: 32,
-    length: 96,
-    bank: RfidBank.epc,
-    data: '',
-  ));
+  final filtersController = MultiFilterPanelController();
   final isInventoryRunning = signal(false);
   final tagCount = signal(0);
   final allCount = signal(0);
@@ -72,6 +67,7 @@ class InventoryViewModel {
     _inventoryTimer?.cancel();
     _durationTimer?.cancel();
     _pageIndexEffectCleanup();
+    filtersController.dispose();
   }
 
   void addTag(RfidTagInfo tagInfo) {
@@ -96,7 +92,7 @@ class InventoryViewModel {
   // 单步盘点
   Future<void> singleInventory() async {
     final res = await RfidManager.instance.singleInventory(
-      filter: filter.value,
+      filters: filtersController.filters,
     );
 
     if (res.result) {
@@ -126,7 +122,7 @@ class InventoryViewModel {
     }
 
     final res = await RfidManager.instance.startInventory(
-      filter: filter.value,
+      filters: filtersController.filters,
       inventoryParam: RfidInventoryParam(unique: unique.value),
     );
 

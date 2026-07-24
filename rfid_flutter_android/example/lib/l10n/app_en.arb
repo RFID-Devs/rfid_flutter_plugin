@@ -21,6 +21,31 @@
 
 
   "filter": "Filter",
+  "filterTitle": "Tag Filter",
+  "filterNone": "No filter",
+  "filterEmpty": "No filter conditions",
+  "filterAdd": "Add Filter",
+  "filterClear": "Clear Filters",
+  "filterCountFormat": "{count} tag filter(s)",
+  "@filterCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "filterDialogTitle": "Filter Condition",
+  "filterItemFormat": "{bank} · Offset {offset} · Length {length} · {data}",
+  "@filterItemFormat": {
+    "placeholders": {
+      "bank": { "type": "String" },
+      "offset": { "type": "int" },
+      "length": { "type": "int" },
+      "data": { "type": "String" }
+    }
+  },
+  "filterMaxCount": "Maximum 8 filter conditions",
+  "filterOffsetInvalid": "Invalid offset",
+  "filterLengthInvalid": "Invalid length",
+  "filterDataEmpty": "Filter data cannot be empty",
   "offset": "Offset",
   "length": "Length",
   "data": "Data",
@@ -28,6 +53,7 @@
   "enterHexData": "Enter hex data",
   "password": "Password",
   "enterPassword": "Enter password",
+  "ok": "OK",
   
 
   "clear": "Clear",

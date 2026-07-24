@@ -290,21 +290,30 @@ class RfidWithUart implements RfidInterface {
     );
   }
 
-  Future<RfidResult<bool>> _setupFilter(RfidFilter? filter) async {
-    if (filter == null) {
-      return const RfidResult.success(true); // 无过滤器
+  Future<RfidResult<bool>> _setupFilters(List<RfidFilter>? filters) async {
+    if (filters == null) {
+      return const RfidResult.success(true); // 不设置过滤
     }
 
-    if (filter.enabled) {
-      // 启用过滤器
-      final res = await setFilter(filter);
+    // 仅统计 enabled == true 的过滤器
+    final enabledFilters = filters.where((f) => f.enabled).toList();
+
+    if (enabledFilters.isEmpty) {
+      // 空列表或全部 enabled == false：禁用过滤
+      final emptyFilter = RfidFilter(enabled: true, bank: RfidBank.epc, offset: 0, length: 0, data: '');
+      final res = await setFilter(emptyFilter);
+      if (res.isIneffective) {
+        return RfidResult.failure(res.error);
+      }
+    } else if (enabledFilters.length == 1) {
+      // 单个过滤：setFilter 适配度更高
+      final res = await setFilter(enabledFilters.first);
       if (res.isIneffective) {
         return RfidResult.failure(res.error);
       }
     } else {
-      // 禁用过滤器 - 设置一个空的过滤器
-      final emptyFilter = RfidFilter(enabled: true, bank: RfidBank.epc, offset: 0, length: 0, data: '');
-      final res = await setFilter(emptyFilter);
+      // 多个过滤
+      final res = await setFilters(enabledFilters);
       if (res.isIneffective) {
         return RfidResult.failure(res.error);
       }
@@ -314,8 +323,8 @@ class RfidWithUart implements RfidInterface {
   }
 
   @override
-  Future<RfidResult<RfidTagInfo>> singleInventory({RfidFilter? filter}) async {
-    final filterResult = await _setupFilter(filter);
+  Future<RfidResult<RfidTagInfo>> singleInventory({List<RfidFilter>? filters}) async {
+    final filterResult = await _setupFilters(filters);
     if (filterResult.isIneffective) {
       return RfidResult.failure(filterResult.error);
     }
@@ -327,10 +336,10 @@ class RfidWithUart implements RfidInterface {
 
   @override
   Future<RfidResult<bool>> startInventory({
-    RfidFilter? filter,
+    List<RfidFilter>? filters,
     RfidInventoryParam? inventoryParam,
   }) async {
-    final filterResult = await _setupFilter(filter);
+    final filterResult = await _setupFilters(filters);
     if (filterResult.isIneffective) {
       return RfidResult.failure(filterResult.error);
     }

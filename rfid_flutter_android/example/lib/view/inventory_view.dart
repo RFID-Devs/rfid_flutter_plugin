@@ -3,7 +3,8 @@ import 'package:signals/signals_flutter.dart';
 import '../l10n/app_localizations.dart';
 import '../entity/rfid_tag_info_display.dart';
 import '../view_model/inventory_view_model.dart';
-import '../widget/filter_widget.dart';
+import '../widget/expandable_panel/expandable_panel.dart';
+import '../widget/multi_filter_panel.dart';
 import '../entity/app_global_state.dart';
 
 class InventoryView extends StatefulWidget {
@@ -39,16 +40,37 @@ class _InventoryViewState extends State<InventoryView> with AutomaticKeepAliveCl
     super.build(context);
     // print('inventory build');
 
-    return Padding(
-      padding: const EdgeInsets.all(4.0),
-      child: Column(
-        children: [
-          FilterWidget(filter: _viewModel.filter.value),
-          _buildButtons(),
-          _buildTimeSection(),
-          _buildTagList(),
-        ],
-      ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: MultiFilterPanel(controller: _viewModel.filtersController),
+            ),
+            Expanded(
+              child: ExpandablePanel(
+                title: AppLocalizations.of(context)!.settings,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Text('Settings panel placeholder'),
+                ),
+              ),
+            ),
+          ],
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: [
+                _buildButtons(),
+                _buildTimeSection(),
+                _buildTagList(),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 

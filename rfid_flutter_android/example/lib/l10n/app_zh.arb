@@ -20,11 +20,37 @@
 
 
   "filter": "过滤",
+  "filterTitle": "标签过滤",
+  "filterNone": "无过滤",
+  "filterEmpty": "无过滤条件",
+  "filterAdd": "添加过滤",
+  "filterClear": "清空过滤",
+  "filterCountFormat": "{count} 个过滤条件",
+  "@filterCountFormat": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "filterDialogTitle": "过滤条件",
+  "filterItemFormat": "{bank} · 地址 {offset} · 长度 {length} · {data}",
+  "@filterItemFormat": {
+    "placeholders": {
+      "bank": { "type": "String" },
+      "offset": { "type": "int" },
+      "length": { "type": "int" },
+      "data": { "type": "String" }
+    }
+  },
+  "filterMaxCount": "最多支持添加8个过滤条件",
+  "filterOffsetInvalid": "地址参数无效",
+  "filterLengthInvalid": "长度参数无效",
+  "filterDataEmpty": "过滤数据不能为空",
   "offset": "地址",
   "length": "长度",
   "data": "数据",
   "bank": "存储区",
   "enterHexData": "输入十六进制数据",
+  "ok": "确定",
 
 
   "clear": "清空",
