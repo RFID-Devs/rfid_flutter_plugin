@@ -1,3 +1,7 @@
+## 0.2.0
+* feat: add `setFilters` API for multi-filter support
+* refactor!: change `singleInventory` / `startInventory` filter parameter from `RfidFilter?` to `List<RfidFilter>? filters`
+
 ## 0.1.1
 
 * Improve documentation
