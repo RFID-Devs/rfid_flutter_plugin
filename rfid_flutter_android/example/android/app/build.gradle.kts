@@ -1,3 +1,7 @@
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -63,11 +67,14 @@ android {
         }
     }
 
-    // 自定义apk名称
+    // 自定义 apk 名称：Flutter-RFID-Demo_v{version}_{debug_?}{yyyyMMdd}.apk
     applicationVariants.all {
+        val variant = this
         outputs.all {
-            val output = this as? com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output?.outputFileName = "Flutter_RFID_Demo_v${defaultConfig.versionName}_${buildType.name}.apk"
+            val buildDate = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())
+            val signingConfigName = if (variant.buildType.name == "debug") "debug_" else ""
+            val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            output.outputFileName = "Flutter-RFID-Demo_v${defaultConfig.versionName}_${signingConfigName}${buildDate}.apk"
         }
     }
 }
