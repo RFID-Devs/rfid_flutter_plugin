@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * 播音辅助类：串行播放短音效；队列上限 2，超出丢弃，避免积压拖尾。
- * 首次 {@link #play(int)} 时懒加载 SoundPool 与消费线程，空闲时线程在 wait 上阻塞。
+ * 构造时预加载 SoundPool；消费线程在采样未就绪时 wait，避免首次 play 静默失败。
  */
 public class PlaySoundHelper {
     private final Context context;
@@ -20,10 +20,16 @@ public class PlaySoundHelper {
     private int successSoundId;
     private int failSoundId;
     private volatile boolean soundReady = false;
+    /** SoundPool.load 异步完成前为 false，避免首次 play 无声 */
+    private volatile boolean samplesLoaded = false;
+    private boolean successLoaded;
+    private boolean failLoaded;
     private PlaySoundThread playSoundThread;
 
     public PlaySoundHelper(Context context) {
         this.context = context.getApplicationContext();
+        // 启动时预加载，降低首次播音等待
+        ensureReady();
     }
 
     /**
@@ -56,6 +62,25 @@ public class PlaySoundHelper {
                     .setMaxStreams(1)
                     .setAudioAttributes(attributes)
                     .build();
+            successLoaded = false;
+            failLoaded = false;
+            samplesLoaded = false;
+            soundPool.setOnLoadCompleteListener((sp, sampleId, status) -> {
+                if (status != 0) {
+                    return;
+                }
+                synchronized (playSoundLock) {
+                    if (sampleId == successSoundId) {
+                        successLoaded = true;
+                    } else if (sampleId == failSoundId) {
+                        failLoaded = true;
+                    }
+                    if (successLoaded && failLoaded) {
+                        samplesLoaded = true;
+                        playSoundLock.notifyAll();
+                    }
+                }
+            });
             successSoundId = soundPool.load(context, R.raw.barcodebeep, 1);
             failSoundId = soundPool.load(context, R.raw.fail, 1);
 
@@ -102,6 +127,21 @@ public class PlaySoundHelper {
                         }
                     }
                     continue;
+                }
+
+                // SoundPool.load 异步，采样未就绪时等待，避免首次 play 静默失败
+                synchronized (playSoundLock) {
+                    while (!samplesLoaded && !isInterrupted()) {
+                        try {
+                            playSoundLock.wait();
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            return;
+                        }
+                    }
+                }
+                if (isInterrupted()) {
+                    break;
                 }
 
                 Integer soundType = queue.poll();
