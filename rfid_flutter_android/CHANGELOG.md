@@ -1,3 +1,11 @@
+## 0.2.0
+* feat: add `setFilters` API for multi-filter support
+* feat: improve compatibility with more device models
+* feat: add `DeviceManager.playSound` API
+* fix: prevent duplicate key event callbacks caused by Flutter KeyboardManager redispatch
+* refactor!: change `singleInventory` / `startInventory` filter parameter from `RfidFilter?` to `List<RfidFilter>? filters`
+* refactor!: remove `RfidFrequency.china1`; rename `china2` to `china`
+
 ## 0.1.1
 
 * fix: Fix EventSink null pointer problem

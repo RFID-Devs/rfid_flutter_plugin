@@ -77,7 +77,7 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  rfid_flutter_android: ^0.1.1
+  rfid_flutter_android: ^0.2.0
 ```
 
 ### 📖 Basic Usage

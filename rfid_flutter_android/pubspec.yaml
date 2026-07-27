@@ -1,6 +1,6 @@
 name: rfid_flutter_android
 description: "Flutter Android plug-in implementation of RFID, Barcode and other functions."
-version: 0.1.1
+version: 0.2.0
 homepage: https://github.com/RFID-Devs/rfid_flutter_plugin/tree/main/rfid_flutter_android
 
 environment:
@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  rfid_flutter_core: ^0.1.1
+  rfid_flutter_core: ^0.3.0
   # rfid_flutter_core:
   #   path: ../rfid_flutter_core
 

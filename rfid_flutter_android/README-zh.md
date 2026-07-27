@@ -76,7 +76,7 @@ Android 平台 RFID 设备集成插件，支持 UART 和 URA4 设备
 
 ```yaml
 dependencies:
-  rfid_flutter_android: ^0.1.1
+  rfid_flutter_android: ^0.2.0
 ```
 
 #### UART RFID 示例

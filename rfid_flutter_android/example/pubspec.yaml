@@ -3,7 +3,7 @@ description: "Demonstrates how to use the rfid_flutter_android plugin."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 0.1.1
+version: 0.2.0
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -18,10 +18,9 @@ dependencies:
   cupertino_icons: ^1.0.6
   signals: ^6.0.2
   bot_toast: ^4.1.3
-  audioplayers: ^6.5.1 
   package_info_plus: ^8.0.0
   charset_converter: ^2.3.0
-  # rfid_flutter_android: ^0.1.1
+  # rfid_flutter_android: ^0.2.0
   rfid_flutter_android:
     path: ../
 
