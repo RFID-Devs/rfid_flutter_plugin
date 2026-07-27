@@ -1,3 +1,6 @@
+## 0.3.0
+* refactor!: remove `RfidFrequency.china1`; rename `china2` to `china`
+
 ## 0.2.0
 * feat: add `setFilters` API for multi-filter support
 * refactor!: change `singleInventory` / `startInventory` filter parameter from `RfidFilter?` to `List<RfidFilter>? filters`

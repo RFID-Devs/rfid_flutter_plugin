@@ -1,6 +1,6 @@
 name: rfid_flutter_core
 description: Core interfaces, data classes, and enums for RFID Flutter packages. Provides the foundation for RFID reader implementations.
-version: 0.2.0
+version: 0.3.0
 homepage: https://github.com/RFID-Devs/rfid_flutter_plugin/tree/main/rfid_flutter_core  
 environment:
   sdk: '>=2.17.0 <4.0.0'

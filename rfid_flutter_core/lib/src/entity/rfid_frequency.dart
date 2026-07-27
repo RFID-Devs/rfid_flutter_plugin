@@ -2,10 +2,10 @@
 /// RFID模块工作频段
 enum RfidFrequency {
   /// China frequency range (840~845MHz)
-  china1(0x01),
+  // china1(0x01),
 
   /// China Plus frequency range (920~925MHz)
-  china2(0x02),
+  china(0x02),
 
   /// ETSI Lower frequency range (865~868MHz)
   etsi_lower(0x04),
@@ -70,10 +70,8 @@ enum RfidFrequency {
   /// 获取频段描述
   String get description {
     switch (this) {
-      case china1:
-        return 'China1';
-      case china2:
-        return 'China2';
+      case china:
+        return 'China';
       case etsi_lower:
         return 'ETSI Lower';
       case usa:
